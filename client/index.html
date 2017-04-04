@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html ng-app='myApp'>
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+    <script src="angular/angular.js"></script>
+    <script src="angular-route/angular-route.js"></script>
+    <script>
+    var myApp = angular.module('myApp', ['ngRoute']);
+    console.log(myApp);
+
+    myApp.factory('playersfactory', function(){
+      var players=[{name:"dodo"}];
+      var factory = {};
+      var teams=[{name:"speros"}];
+      factory.index = function(callback){
+        callback(players);
+      }
+
+      factory.addplayers = function(newplayers,callback){
+        players.push(newplayers);
+        callback(players)
+      }
+
+      factory.removeplayer=function(player,callback){
+        console.log(player);
+        players.splice(players.indexOf(player), 1);
+        // players.splice(index,1)
+        callback(players)
+      }
+      return factory;
+    })
+
+    myApp.factory('teamsfactory', function(){
+
+      var teams=[{name:"lions"}];
+      var factory = [];
+      factory.index = function(callback){
+        callback(teams);
+      }
+
+      factory.addteams = function(newteams,callback){
+        teams.push(newteams);
+        callback(teams)
+      }
+
+      factory.removeteam=function(index,callback){
+        teams.splice(index,1)
+        callback(teams)
+      }
+      return factory;
+    })
+
+    myApp.config(function($routeProvider){
+      $routeProvider
+      .when('/players',{
+        templateUrl:'partials/view1.html',
+
+      })
+      .when('/teams',{
+        templateUrl:'partials/view2.html'
+      })
+      .when('/associations',{
+        templateUrl:'partials/view3.html'
+      })
+      .otherwise({
+        redirectTo:'/'
+      });
+    });
+
+    myApp.controller('view1Controller',['$scope','playersfactory',function($scope,playersfactory){
+
+      function setPlayers(data){
+        $scope.players = data;
+        $scope.player = {};
+      }
+      $scope.index = function(){
+        playersfactory.index(setPlayers);
+      };
+      $scope.index();
+
+      $scope.addplayer = function(){
+        console.log('hello');
+        playersfactory.addplayers($scope.player,setPlayers);
+
+      }
+
+      $scope.removeplayer=function(player){
+        console.log(player);
+        playersfactory.removeplayer(player,setPlayers);
+      }
+
+    }])
+
+    myApp.controller('view2Controller',['$scope','teamsfactory',function($scope,teamsfactory){
+
+      function setTeams(data){
+        $scope.teams = data;
+        $scope.team = {};
+      }
+      $scope.index = function(){
+        teamsfactory.index(setTeams);
+      };
+      $scope.index();
+
+      $scope.addteam = function(){
+        console.log('hello');
+        teamsfactory.addteams($scope.team,setTeams);
+
+      }
+
+      $scope.removeteam=function(index){
+        teamsfactory.removeteam(index,setTeams);
+      }
+
+    }])
+
+
+    myApp.controller('view3Controller',['$scope','playersfactory','teamsfactory', function($scope, playersfactory, teamsfactory){
+
+      function setTeams(data){
+        $scope.teams = data;
+        $scope.team = {};
+      }
+      $scope.indexTeam = function(){
+        teamsfactory.index(setTeams);
+      };
+      $scope.indexTeam();
+
+      function setPlayers(data){
+        $scope.players = data;
+        $scope.player = {};
+      }
+      $scope.index = function(){
+        playersfactory.index(setPlayers);
+      };
+      $scope.index();
+
+
+      $scope.removeteam=function(index){
+        teamsfactory.removeteam(index,setTeams);
+      }
+
+$scope.assign=function(){
+  // $scope.association.push({player:$scope.player, team:$scope.team})
+  console.log($scope.association)
+  $scope.players[$scope.association.player].team = $scope.association.team;
+}
+    // $scope.association=[];
+
+$scope.clear = function(index){
+  $scope.players[index].team= "";
+
+
+
+
+
+}
+
+
+    }])
+
+  </script>
+  </head>
+  <body>
+  <div >
+    <a href="#!/players">Players</a>  | <a href="#!/teams">Teams</a>  | <a href="#!/associations">Associations</a>
+    <div ng-view="">
+
+    </div>
+
+  </div>
+  </body>
+</html>
